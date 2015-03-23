@@ -92,20 +92,21 @@ var controller = require('./roomController');
 var log = logger.getLogger("ErizoController");
 
 // Instantiate the server
-if(GLOBAL.config.erizoController.ssl){
-    if(!GLOBAL.config.erizoController.sslKey || !GLOBAL.config.erizoController.sslCert)
+var server;
+if (GLOBAL.config.erizoController.ssl) {
+    if (!GLOBAL.config.erizoController.sslKey || !GLOBAL.config.erizoController.sslCert) {
         log.warn('SSL key and certification needs to be provided in licode_config as sslKey & sslCert');
-        var server = http.createServer();
-    else{
+        server = http.createServer();
+    } else {
         var options = {
             key: fs.readFileSync(GLOBAL.config.erizoController.sslKey).toString(),
             cert: fs.readFileSync(GLOBAL.config.erizoController.sslCert).toString()
         };
-        var server = https.createServer(options);
+        server = https.createServer(options);
     }
+} else {
+    server = http.createServer();
 }
-else
-    var server = http.createServer();
 
 server.listen(GLOBAL.config.erizoController.port);
 var io = require('socket.io').listen(server, {log:false});
